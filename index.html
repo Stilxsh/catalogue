@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalogue</title>
+
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --primary:#0ea5e9;
+      --accent:#16a34a;
+      --border:#e5e7eb;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    body{
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg,#0b1220 0%, #111827 100%);
+    }
+
+    header{
+      padding:2rem 1rem;
+      text-align:center;
+      color:white;
+    }
+
+    .controls{
+      max-width:1200px;
+      margin:auto;
+      padding:1rem;
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:1rem;
+    }
+
+    .filter-btn, .pdf-btn{
+      padding:0.4rem 0.7rem;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    .filter-btn{background:#1f2937;color:white}
+    .filter-btn.active{background:var(--primary)}
+    .pdf-btn{background:var(--accent);color:white}
+
+    .container{
+      max-width:1200px;
+      margin:auto;
+      padding:1rem;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:1.5rem;
+    }
+
+    .product{
+      background:white;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    /* For product images */
+    .product img {
+      width: 100%;       /* full width of container */
+      height: 200px;     /* fixed height for consistency */
+      object-fit: contain; /* fit image inside frame without cropping */
+      background: #f9f9f9; /* optional: gray background for empty space */
+    }
+
+    /* For logo */
+    header img, .pdf-left img {
+      width: auto;
+      height: 50px; /* adjusts logo height consistently */
+      object-fit: contain;
+    }
+
+    .product-info{padding:0.8rem}
+
+    .product-title{font-weight:bold;margin-bottom:0.3rem}
+
+    .meta{
+      display:flex;
+      justify-content:space-between;
+      font-size:0.9rem;
+    }
+
+    .price{color:var(--accent);font-weight:bold}
+    .qty{color:var(--muted)}
+
+    /* Hide PDF header on screen */
+    .pdf-header{display:none}
+
+    /* PRINT (PDF) */
+    @media print{
+      body{background:white}
+      header, .controls{display:none}
+
+      .pdf-header{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        border-bottom:2px solid #000;
+        padding:8px 5px;
+        margin-bottom:8px;
+      }
+
+      .pdf-left{
+        display:flex;
+        align-items:center;
+        gap:10px;
+      }
+
+      .pdf-left img{
+        height:40px;
+      }
+
+      .pdf-title{
+        font-size:14px;
+        font-weight:bold;
+      }
+
+      .pdf-contact{
+        text-align:right;
+        font-size:11px;
+        line-height:1.3;
+      }
+
+      .container{
+        display:block;
+        padding:0;
+      }
+
+      .product{
+        display:flex;
+        align-items:center;
+        border:1px solid #ccc;
+        margin-bottom:4px;
+        page-break-inside:avoid;
+      }
+
+      .product img{
+        width:80px;
+        height:80px;
+      }
+
+      .product-info{
+        display:grid;
+        grid-template-columns:2fr 1fr 1fr;
+        width:100%;
+        padding:5px;
+        font-size:12px;
+        align-items:center;
+      }
+
+      /* Page number footer */
+      footer{
+        position:fixed;
+        bottom:0;
+        width:100%;
+        text-align:right;
+        font-size:10px;
+        padding:5px;
+      }
+
+      footer:after{
+        content:"Page " counter(page);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <img src="logo.png" alt="Logo">
+  <h1>Product Catalogue</h1>
+  <p>The Shop Networks • 07123 456789</p>
+</header>
+
+<div class="controls">
+  <div>
+    <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
+    <button class="filter-btn" onclick="filterProducts('drinks', this)">Drinks</button>
+    <button class="filter-btn" onclick="filterProducts('sweets', this)">Sweets</button>
+    <button class="filter-btn" onclick="filterProducts('snacks', this)">Snacks</button>
+    <button class="filter-btn" onclick="filterProducts('unique', this)">Unique</button>
+  </div>
+
+  <button class="pdf-btn" onclick="window.print()">Download PDF</button>
+</div>
+
+<!-- PDF HEADER -->
+<div class="pdf-header">
+  <div class="pdf-left">
+    <img src="logo.png">
+    <div class="pdf-title">Wholesale Catalogue</div>
+  </div>
+  <div class="pdf-contact">
+    The Shop Networks<br>
+    07123 456789
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="product" data-category="snacks">
+    <img src="products/1.png">
+    <div class="product-info">
+      <div class="product-title">Bingo Chips Salt & Vinegar</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/2.png">
+    <div class="product-info">
+      <div class="product-title">Bingo Chips Spicy Chicken</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/3.png">
+    <div class="product-info">
+      <div class="product-title">Bingo Chips Sour Cream & Onion</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/4.png">
+    <div class="product-info">
+      <div class="product-title">Bingo Chips Original</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/5.png">
+    <div class="product-info">
+      <div class="product-title">Samyang Chili & Lime</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/6.png">
+    <div class="product-info">
+      <div class="product-title">Crazy Jo Large Banana Gummy</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/7.png">
+    <div class="product-info">
+      <div class="product-title">Thai Birthday Cake Cookies</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/8.png">
+    <div class="product-info">
+      <div class="product-title">Thai Raison & Chocolate Cookies</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/9.png">
+    <div class="product-info">
+      <div class="product-title">FDUK Freeze Dried Sweets</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/10.png">
+    <div class="product-info">
+      <div class="product-title">Crunchy Clouds Freeze Dried Candy</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/11.png">
+    <div class="product-info">
+      <div class="product-title">M&M's Popcord</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/12.png">
+    <div class="product-info">
+      <div class="product-title">Snickers Popcorn</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/13.png">
+    <div class="product-info">
+      <div class="product-title">Oreo Popcorn</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/14.png">
+    <div class="product-info">
+      <div class="product-title">Salt Chip Challange</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/15.png">
+    <div class="product-info">
+      <div class="product-title">Sour Strips Cotton Candy</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/16.png">
+    <div class="product-info">
+      <div class="product-title">Sour Strips Strawberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/17.png">
+    <div class="product-info">
+      <div class="product-title">Sour Strips Green Apple</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/18.png">
+    <div class="product-info">
+      <div class="product-title">Sour Strips Melonade</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/19.png">
+    <div class="product-info">
+      <div class="product-title">Sour Strips Lemonberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/20.png">
+    <div class="product-info">
+      <div class="product-title">Sour Strips Watermelon</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/21.png">
+    <div class="product-info">
+      <div class="product-title">Sour Strips Cotton Candy</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/22.png">
+    <div class="product-info">
+      <div class="product-title">Sour Strips Tropical Mango</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/23.png">
+    <div class="product-info">
+      <div class="product-title">Juicy Hangosteen Soft Jelly Sweets</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/24.png">
+    <div class="product-info">
+      <div class="product-title">Juicy Green Grape Soft Jelly Sweets</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/25.png">
+    <div class="product-info">
+      <div class="product-title">Gupperz Boba Tea Blast</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/26.png">
+    <div class="product-info">
+      <div class="product-title">Gupperz Poppin' Pickles</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/27.png">
+    <div class="product-info">
+      <div class="product-title">Gupperz Confetti Cakesplosion</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/28.png">
+    <div class="product-info">
+      <div class="product-title">Super Sour Gushers</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/29.png">
+    <div class="product-info">
+      <div class="product-title">Gushers Blueberry Grape</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/30.png">
+    <div class="product-info">
+      <div class="product-title">Trolli Sour Brite Crawlers Fruit Punch</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/31.png">
+    <div class="product-info">
+      <div class="product-title">Trolli Sour Brite Eggs</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/32.png">
+    <div class="product-info">
+      <div class="product-title">Trolli Sour Duo Crawlers</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/33.png">
+    <div class="product-info">
+      <div class="product-title">Trolli Sour Brite Octopus</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/34.png">
+    <div class="product-info">
+      <div class="product-title">Cookie Dough Bites</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/35.png">
+    <div class="product-info">
+      <div class="product-title">Krabby Patties Minis</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/36.png">
+    <div class="product-info">
+      <div class="product-title">Sour Neon Bears</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/37.png">
+    <div class="product-info">
+      <div class="product-title">Jolly Rancher Hard Candy Blueraspberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/38.png">
+    <div class="product-info">
+      <div class="product-title">Jolly Rancher Hard Candy Original</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/39.png">
+    <div class="product-info">
+      <div class="product-title">Jolly Rancher Hard Candy Tropical</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/40.png">
+    <div class="product-info">
+      <div class="product-title">Jolly Rancher Gummies Very Berry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/41.png">
+    <div class="product-info">
+      <div class="product-title">Nerdy Gummy Clusters</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/42.png">
+    <div class="product-info">
+      <div class="product-title">Nerds Juicy Gummy Clusters</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/43.png">
+    <div class="product-info">
+      <div class="product-title">Nerds Gummy Clusters Limited Time</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/44.png">
+    <div class="product-info">
+      <div class="product-title">Nik'L'Nip Mini Drinks</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/45.png">
+    <div class="product-info">
+      <div class="product-title">Mystery Peelz Strawberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/46.png">
+    <div class="product-info">
+      <div class="product-title">Sour Wax Bear Candy Blueberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/47.png">
+    <div class="product-info">
+      <div class="product-title">Wax Bottle Candy Blueberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/48.png">
+    <div class="product-info">
+      <div class="product-title">Wax Bottle Candy Lyche</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/49.png">
+    <div class="product-info">
+      <div class="product-title">Sour Wax Bear Candy Lyche</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/50.png">
+    <div class="product-info">
+      <div class="product-title">Mystery Peelz Grape</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/51.png">
+    <div class="product-info">
+      <div class="product-title">Mystery Peelz Mango</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/52.png">
+    <div class="product-info">
+      <div class="product-title">Peel Me Mango</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/53.png">
+    <div class="product-info">
+      <div class="product-title">Peel Me Grape</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/54.png">
+    <div class="product-info">
+      <div class="product-title">Peel Me Green Grape</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/55.png">
+    <div class="product-info">
+      <div class="product-title">Peel Me Lyche</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/56.png">
+    <div class="product-info">
+      <div class="product-title">Peel Me Blueberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/57.png">
+    <div class="product-info">
+      <div class="product-title">Peel Me Strawberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/58.png">
+    <div class="product-info">
+      <div class="product-title">Peel Me Raspberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/59.png">
+    <div class="product-info">
+      <div class="product-title">Peel Me Peach</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/60.png">
+    <div class="product-info">
+      <div class="product-title">Kaboom Jelly</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/61.png">
+    <div class="product-info">
+      <div class="product-title">Heart Shaped Jelly</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/62.png">
+    <div class="product-info">
+      <div class="product-title">Jolly Rancher Chews Original</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/63.png">
+    <div class="product-info">
+      <div class="product-title">Freezies Kaboom Jelly</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/64.png">
+    <div class="product-info">
+      <div class="product-title">A&W Ice Cream Soda</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/65.png">
+    <div class="product-info">
+      <div class="product-title">Strawberry Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/66.png">
+    <div class="product-info">
+      <div class="product-title">Pineapple Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/67.png">
+    <div class="product-info">
+      <div class="product-title">Peach Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/68.png">
+    <div class="product-info">
+      <div class="product-title">Grape Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/69.png">
+    <div class="product-info">
+      <div class="product-title">Orange Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/70.png">
+    <div class="product-info">
+      <div class="product-title">Berry Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/71.png">
+    <div class="product-info">
+      <div class="product-title">Sunkist Orange</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/72.png">
+    <div class="product-info">
+      <div class="product-title">Big Red</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/73.png">
+    <div class="product-info">
+      <div class="product-title">Dr Pepper Cream Soda</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/74.png">
+    <div class="product-info">
+      <div class="product-title">Dr Pepper Strawberry & Cream</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/75.png">
+    <div class="product-info">
+      <div class="product-title">Ghost Electric Limeade</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/76.png">
+    <div class="product-info">
+      <div class="product-title">Ghost Sour Pink Lemonade</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/77.png">
+    <div class="product-info">
+      <div class="product-title">Ghost Welch's Grape</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/78.png">
+    <div class="product-info">
+      <div class="product-title">Ghost Strawbango</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/79.png">
+    <div class="product-info">
+      <div class="product-title">Ghost 'Merica Pop</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/80.png">
+    <div class="product-info">
+      <div class="product-title">Ghost Peaches</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/81.png">
+    <div class="product-info">
+      <div class="product-title">Ghost Bubilicious Strawberry Splash</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/82.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Fanta Grape</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/83.png">
+    <div class="product-info">
+      <div class="product-title">Ghost Sour Patch Kids Red Berry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/84.png">
+    <div class="product-info">
+      <div class="product-title">Ghost Sour Patch Kids Blue Raspberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/85.png">
+    <div class="product-info">
+      <div class="product-title">Ghost Original</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/86.png">
+    <div class="product-info">
+      <div class="product-title">Ghost Swedish Fish</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/87.png">
+    <div class="product-info">
+      <div class="product-title">Air Heads Soda Orange</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/88.png">
+    <div class="product-info">
+      <div class="product-title">Twinkies Cookie Dough</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/89.png">
+    <div class="product-info">
+      <div class="product-title">Air Heads Soda Watermelon</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/90.png">
+    <div class="product-info">
+      <div class="product-title">Air Heads Soda Strawberry</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/91.png">
+    <div class="product-info">
+      <div class="product-title">Delight Iced Coffee Cinamon</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/92.png">
+    <div class="product-info">
+      <div class="product-title">Delight Iced Coffee Oreo</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/93.png">
+    <div class="product-info">
+      <div class="product-title">Delight Iced Coffee Chocolate</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/94.png">
+    <div class="product-info">
+      <div class="product-title">Canada Dry Fruit Splash</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/95.png">
+    <div class="product-info">
+      <div class="product-title">Peach Rings Peach Soda</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/96.png">
+    <div class="product-info">
+      <div class="product-title">Gummy Worm Sour Grape Soda</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/97.png">
+    <div class="product-info">
+      <div class="product-title">Watermelon Gummy Slides Watermelon Soda</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/98.png">
+    <div class="product-info">
+      <div class="product-title">Feastables Caramel</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/99.png">
+    <div class="product-info">
+      <div class="product-title">Dippo Mini Cone Fun</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/100.png">
+    <div class="product-info">
+      <div class="product-title">Dippo Mini Cone Fun</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/101.png">
+    <div class="product-info">
+      <div class="product-title">Dippo Mini Cone Fun</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/102.png">
+    <div class="product-info">
+      <div class="product-title">Dippo Mini Cone Fun</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/103.png">
+    <div class="product-info">
+      <div class="product-title">Brownie Brittle Chocolate Chip</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/104.png">
+    <div class="product-info">
+      <div class="product-title">Brownie Brittle M&M</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/105.png">
+    <div class="product-info">
+      <div class="product-title">Brownie Brittle Toffee Crunch</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/106.png">
+    <div class="product-info">
+      <div class="product-title">Happy Marshmellow Freezies</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/107.png">
+    <div class="product-info">
+      <div class="product-title">Fanta Tropical</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/108.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Fanta Orange</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/109.png">
+    <div class="product-info">
+      <div class="product-title">Fanta Melon Soda</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/110.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Fanta Red Apple</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/111.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Fanta Green Grape</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/112.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Starbucks Peach Tea</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/113.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Starbucks Strawberry Tea</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/114.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Starbucks Cheese Late</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/115.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Starbucks Strawberry Black Current Black Tea</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/116.png">
+    <div class="product-info">
+      <div class="product-title">Beast Blue Raspberry Large Gummy</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/117.png">
+    <div class="product-info">
+      <div class="product-title">Giant Gamepad Gummy</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/118.png">
+    <div class="product-info">
+      <div class="product-title">Giant Prime Gummy</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/119.png">
+    <div class="product-info">
+      <div class="product-title">Liquid Death Sparkling Water</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/120.png">
+    <div class="product-info">
+      <div class="product-title">Cherry Coca Cola</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/121.png">
+    <div class="product-info">
+      <div class="product-title">Hotdog Fruit Flavour Giant Gummy</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/122.png">
+    <div class="product-info">
+      <div class="product-title">Korean Peach Ice Tea</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/123.png">
+    <div class="product-info">
+      <div class="product-title">Korean Omija Ade Iced Drink</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/124.png">
+    <div class="product-info">
+      <div class="product-title">Korean Hazelnut Iced Drink</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/125.png">
+    <div class="product-info">
+      <div class="product-title">Korean Pineapple Iced Tea</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/126.png">
+    <div class="product-info">
+      <div class="product-title">Korean Watermelon Iced Tea</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/127.png">
+    <div class="product-info">
+      <div class="product-title">Korean Bluelemon Iced Tea</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/128.png">
+    <div class="product-info">
+      <div class="product-title">Korean Americano Iced Drink</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/129.png">
+    <div class="product-info">
+      <div class="product-title">Korean Green Grape Iced Tea</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/130.png">
+    <div class="product-info">
+      <div class="product-title">Korean Vanilla Americano Iced Drink</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/131.png">
+    <div class="product-info">
+      <div class="product-title">Korean Black Iced Drink</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/132.png">
+    <div class="product-info">
+      <div class="product-title">AriZona Tropical ChillZicle</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/133.png">
+    <div class="product-info">
+      <div class="product-title">AriZona Kiwi Strawberry Fruit Juice Cocktail</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/134.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Grape Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/135.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Green Gape Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/136.png">
+    <div class="product-info">
+      <div class="product-title">250mg Redbull</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/137.png">
+    <div class="product-info">
+      <div class="product-title">Redbull Perisa Limau Bali</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/138.png">
+    <div class="product-info">
+      <div class="product-title">Redbull Perisa Epal Anggur Muscat</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/139.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Grape Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/140.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Peach Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/141.png">
+    <div class="product-info">
+      <div class="product-title">Japanese Grape Fanta Bottle</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/142.png">
+    <div class="product-info">
+      <div class="product-title">Mexican Orange Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/143.png">
+    <div class="product-info">
+      <div class="product-title">Mexican Coca Cola</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/144.png">
+    <div class="product-info">
+      <div class="product-title">Nigerian Fanta</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/145.png">
+    <div class="product-info">
+      <div class="product-title">Nigerian Sprite</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/146.png">
+    <div class="product-info">
+      <div class="product-title">Nigerian Coca Cola</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/147.png">
+    <div class="product-info">
+      <div class="product-title">Pistachio Cotton Candy Milkchocolate</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/148.png">
+    <div class="product-info">
+      <div class="product-title">Pistachio Cotton Candy Ruby-Style Chocolate</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/149.png">
+    <div class="product-info">
+      <div class="product-title">Lotus Dubai Chocolate</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/150.png">
+    <div class="product-info">
+      <div class="product-title">Oreo Dubai Chocolate</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+  
+  <div class="product" data-category="snacks">
+    <img src="products/151.png">
+    <div class="product-info">
+      <div class="product-title">Hot Nut Challange</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/152.png">
+    <div class="product-info">
+      <div class="product-title">Kinder Dubai Chocolate</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/153.png">
+    <div class="product-info">
+      <div class="product-title">Samyang Spicy Chicken</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/154.png">
+    <div class="product-info">
+      <div class="product-title">Bingo Chips Lemon With Hot Chilli</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/155.png">
+    <div class="product-info">
+      <div class="product-title">Bingo Chips BBQ</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/156.png">
+    <div class="product-info">
+      <div class="product-title">Bingo Chips Tomato</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+  <div class="product" data-category="snacks">
+    <img src="products/157.png">
+    <div class="product-info">
+      <div class="product-title">Bingo Chips Cheddar Cheese</div>
+      <div class="price"></div>
+      <div class="qty">12 units / box</div>
+    </div>
+  </div>
+
+</div>
+
+<footer></footer>
+
+<script>
+function filterProducts(category, btn){
+  const products = document.querySelectorAll('.product');
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  products.forEach(p => {
+    p.style.display = (category === 'all' || p.dataset.category === category) ? '' : 'none';
+  });
+}
+</script>
+
+</body>
+</html>
