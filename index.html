@@ -2,1729 +2,579 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Shop Trading LTD | Wholesale Catalogue</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Shop Trading LTD | Wholesale Hub</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
     :root {
-      --primary: #10b981; /* Vibrant Green */
-      --primary-hover: #059669;
-      --bg: #f8fafc;
-      --glass: rgba(255, 255, 255, 0.9);
-      --text-dark: #0f172a;
-      --text-muted: #64748b;
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --accent: #3b82f6;
+      --dark: #0f172a;
+      --slate: #64748b;
+      --light: #f8fafc;
+      --white: #ffffff;
+      --radius: 20px;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    /* Reset & Base */
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: var(--bg);
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.08) 0px, transparent 50%);
-      background-attachment: fixed;
-      color: var(--text-dark);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
       line-height: 1.5;
+      padding-bottom: 100px; /* Space for mobile nav */
     }
 
-    /* --- NAVIGATION / HEADER --- */
+    /* --- HEADER --- */
     header {
-      padding: 2.5rem 1rem;
-      text-align: center;
-      background: var(--glass);
+      background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(12px);
+      padding: 1.5rem 1rem;
+      text-align: center;
       border-bottom: 1px solid rgba(0,0,0,0.05);
       position: sticky;
       top: 0;
       z-index: 1000;
     }
+    .brand-logo { height: 60px; width: auto; margin-bottom: 10px; }
+    header h1 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; }
+    .contact-info { font-size: 0.8rem; color: var(--slate); margin-top: 4px; }
 
-    header img { 
-      height: 60px; 
-      margin-bottom: 0.5rem;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+    /* --- CONTROLS --- */
+    .controls { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
+    .search-wrapper { position: relative; margin-bottom: 1.5rem; }
+    .search-wrapper i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--slate); }
+    .search-input {
+      width: 100%; padding: 16px 16px 16px 50px; border-radius: 16px;
+      border: 1px solid #e2e8f0; font-size: 1rem; font-weight: 600;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); outline: none; transition: 0.3s;
+    }
+    .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
+
+    .filter-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-pill {
+      padding: 10px 22px; border-radius: 50px; background: var(--white);
+      border: 1px solid #e2e8f0; cursor: pointer; white-space: nowrap;
+      font-weight: 700; color: var(--slate); transition: 0.2s;
+    }
+    .filter-pill.active { background: var(--dark); color: var(--white); border-color: var(--dark); }
+
+    /* --- PRODUCT GRID --- */
+    .grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 15px; padding: 0 1rem; max-width: 1200px; margin: 0 auto;
+    }
+    @media (min-width: 768px) { 
+      .grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; } 
     }
 
-    header h1 {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.025em;
-      background: linear-gradient(90deg, var(--primary), #3b82f6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .card {
+      background: var(--white); border-radius: var(--radius); padding: 15px;
+      border: 1px solid rgba(0,0,0,0.04); display: flex; flex-direction: column;
+      position: relative; transition: transform 0.2s ease;
+    }
+    .card:active { transform: scale(0.97); }
+
+    .img-hold {
+      aspect-ratio: 1; background: #fcfcfc; border-radius: 15px;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
+    }
+    .img-hold img { max-width: 85%; max-height: 85%; object-fit: contain; }
+
+    .status-badge {
+      position: absolute; top: 22px; left: 22px; font-size: 0.65rem;
+      font-weight: 800; padding: 4px 10px; border-radius: 6px; color: white; text-transform: uppercase;
+    }
+    .status-oos { background: #ef4444; }
+    .status-low { background: #f59e0b; }
+
+    .card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; height: 2.5em; overflow: hidden; line-height: 1.3; }
+    .price-tag { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+    .pack-info { font-size: 0.75rem; color: var(--slate); margin-bottom: 12px; font-weight: 600; }
+
+    .btn-add {
+      width: 100%; padding: 12px; border-radius: 12px; border: none;
+      background: var(--dark); color: white; font-weight: 700; cursor: pointer;
+      transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-add.added { background: var(--primary); }
+    .btn-add:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+
+    /* --- QUOTE DRAWER --- */
+    #sidebar {
+      position: fixed; top: 0; right: -100%; width: 100%; max-width: 420px;
+      height: 100%; background: var(--white); z-index: 2000;
+      box-shadow: -10px 0 40px rgba(0,0,0,0.1); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex; flex-direction: column;
+    }
+    #sidebar.open { right: 0; }
+
+    .side-head { padding: 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+    .side-body { flex: 1; overflow-y: auto; padding: 20px; }
+    
+    .q-item {
+      display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f1f5f9;
+    }
+    .q-item img { width: 60px; height: 60px; object-fit: contain; background: #f8fafc; border-radius: 10px; }
+    .q-info { flex: 1; }
+    .q-info h4 { font-size: 0.9rem; margin-bottom: 8px; font-weight: 700; }
+    
+    .qty-controls { display: flex; align-items: center; gap: 12px; }
+    .qty-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; font-weight: 800; cursor: pointer; }
+    
+    .side-foot { padding: 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; }
+    
+    .delivery-box { margin-bottom: 20px; }
+    .delivery-box label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--slate); margin-bottom: 8px; text-transform: uppercase; }
+    .delivery-box input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-family: inherit; }
+
+    .btn-whatsapp {
+      width: 100%; padding: 18px; background: #25d366; color: white; border: none;
+      border-radius: 16px; font-weight: 800; font-size: 1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
     }
 
-    header p { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
+    .template-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+    .btn-sub { background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; color: var(--slate); cursor: pointer; }
 
-    /* --- CONTROLS SECTION --- */
-    .controls {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 1.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
+    /* --- MOBILE NAV --- */
+    .mobile-nav {
+      position: fixed; bottom: 0; left: 0; width: 100%;
+      background: var(--white); display: flex; justify-content: space-around;
+      padding: 12px 0; border-top: 1px solid #f1f5f9; z-index: 1000;
     }
+    .nav-link { background: none; border: none; color: #94a3b8; font-size: 0.7rem; font-weight: 700; text-align: center; position: relative; cursor: pointer; }
+    .nav-link i { display: block; font-size: 1.3rem; margin-bottom: 4px; }
+    .nav-link.active { color: var(--primary); }
+    .cart-badge { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 10px; min-width: 18px; padding: 2px 4px; border-radius: 10px; border: 2px solid white; }
 
-    .search-wrapper {
-      width: 100%;
-      max-width: 500px;
-      position: relative;
-    }
+    #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: none; z-index: 1500; }
+    #overlay.active { display: block; }
 
-    .search-bar {
-      width: 100%;
-      padding: 14px 20px;
-      border-radius: 16px;
-      border: 1px solid #e2e8f0;
-      background: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-      font-size: 1rem;
-      outline: none;
-      transition: all 0.3s ease;
-    }
-
-    .search-bar:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-    }
-
-    .filter-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    /* --- BUTTONS --- */
-    .btn {
-      padding: 10px 22px;
-      border-radius: 50px;
-      border: 1px solid #e2e8f0;
-      background: white;
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--text-muted);
-      transition: all 0.2s ease;
-    }
-
-    .btn:hover {
-      background: #f1f5f9;
-      transform: translateY(-1px);
-    }
-
-    .btn.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-    }
-
-    .pdf-btn {
-      background: var(--text-dark);
-      color: white;
-      border: none;
-      margin-top: 1rem;
-    }
-
-    .pdf-btn:hover { background: #334155; }
-
-    /* --- THE GRID CONTAINER --- */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto 5rem auto;
-      padding: 0 1.5rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 2.5rem;
-    }
-
-    /* --- STYLING FOR YOUR PRODUCT BLOCKS --- */
-    .product {
-      background: white;
-      border-radius: 24px;
-      padding: 12px;
-      border: 1px solid rgba(0,0,0,0.04);
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .product:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    }
-
-    .product img {
-      width: 100%;
-      height: 220px;
-      object-fit: contain;
-      background: #fcfcfc;
-      border-radius: 18px;
-      padding: 10px;
-      margin-bottom: 1rem;
-    }
-
-    .product-info {
-      padding: 0.5rem 0.8rem 1rem 0.8rem;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-
-    .product-title {
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: var(--text-dark);
-      margin-bottom: 1rem;
-      line-height: 1.3;
-    }
-
-    .price {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-top: auto; /* Pushes price to bottom */
-    }
-
-    .qty {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      background: #f1f5f9;
-      padding: 4px 10px;
-      border-radius: 6px;
-      width: fit-content;
-      margin-top: 6px;
-      font-weight: 600;
-    }
-
-    /* --- PRINT STYLES --- */
+    /* --- PRINT OPTIMIZATION --- */
     @media print {
-      header, .controls, .pdf-btn { display: none !important; }
-      body { background: white; }
-      .container { display: block; }
-      .product {
-        display: flex; flex-direction: row; align-items: center;
-        border: none; border-bottom: 1px solid #eee; margin-bottom: 10px;
-        box-shadow: none; transform: none !important;
-      }
-      .product img { width: 80px; height: 80px; margin-right: 15px; }
-      .product-title { font-size: 1rem; margin: 0; }
+      .mobile-nav, .controls, .btn-add, .side-foot, .qty-btn, .status-badge { display: none !important; }
+      #sidebar { position: static; width: 100%; box-shadow: none; display: block; }
+      .grid { display: block; }
+      .card { border: none; border-bottom: 1px solid #eee; flex-direction: row; gap: 20px; page-break-inside: avoid; }
+      .img-hold { width: 100px; height: 100px; }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <img src="logo.png" alt="Logo">
-  <h1>Product Catalogue</h1>
-  <p>The Shop Trading LTD • Wholesale Catalogue • 07366 341300</p>
+  <img src="logo.png" class="brand-logo" alt="The Shop Trading LTD" onerror="this.style.display='none'">
+  <h1>The Shop Trading LTD</h1>
+  <div class="contact-info">
+    <i class="fab fa-whatsapp"></i> 07366 341300 • Wholesale Catalogue
+  </div>
 </header>
 
 <div class="controls">
   <div class="search-wrapper">
-    <input type="text" class="search-bar" id="shopSearch" placeholder="Search product name..." onkeyup="runSearch()">
+    <i class="fas fa-search"></i>
+    <input type="text" class="search-input" id="search" placeholder="Search by flavor, brand, or category..." onkeyup="app.render()">
   </div>
   
-  <div class="filter-group">
-    <button class="btn active" onclick="runFilter('all', this)">All Items</button>
-    <button class="btn" onclick="runFilter('drinks', this)">Drinks</button>
-    <button class="btn" onclick="runFilter('sweets', this)">Sweets</button>
-    <button class="btn" onclick="runFilter('snacks', this)">Snacks</button>
-    <button class="btn" onclick="runFilter('unique', this)">Unique Items</button>
+  <div class="filter-bar">
+    <button class="filter-pill active" onclick="app.setFilter('all', this)">All Stock</button>
+    <button class="filter-pill" onclick="app.setFilter('top', this)">🔥 Popular</button>
+    <button class="filter-pill" onclick="app.setFilter('drinks', this)">🥤 Drinks</button>
+    <button class="filter-pill" onclick="app.setFilter('snacks', this)">🍿 Snacks</button>
+    <button class="filter-pill" onclick="app.setFilter('sweets', this)">🍭 Sweets</button>
   </div>
-
-  <button class="btn pdf-btn" onclick="window.print()">Download as PDF</button>
 </div>
 
-<div class="container" id="mainGrid">
-  <div class="product" data-category="top">
-    <img src="11.png">
-    <div class="product-info">
-      <div class="product-title">M&M's Popcord</div>
-      <div class="price">£33.00</div>
-      <div class="qty">12 units / box</div>
-    </div>
+<div class="grid" id="mainGrid">
   </div>
 
-  <div class="product" data-category="top">
-    <img src="12.png">
-    <div class="product-info">
-      <div class="product-title">Snickers Popcorn</div>
-      <div class="price">£33.00</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="top">
-    <img src="13.png">
-    <div class="product-info">
-      <div class="product-title">Oreo Popcorn</div>
-      <div class="price">£33.00</div>
-      <div class="qty">12 units / box</div>
-    </div>
+<div id="overlay" onclick="app.toggleSidebar()"></div>
+<div id="sidebar">
+  <div class="side-head">
+    <h3>Your Quote Request</h3>
+    <button onclick="app.toggleSidebar()" style="background:none; border:none; cursor:pointer;"><i class="fas fa-times fa-lg"></i></button>
   </div>
   
-  <div class="product" data-category="sweets">
-    <img src="46.png">
-    <div class="product-info">
-      <div class="product-title">Spaceman Sour Wax Bear Candy Blueberry</div>
-      <div class="price">£15.00</div>
-      <div class="qty">12 units / box</div>
+  <div class="side-body" id="quoteList">
     </div>
-  </div>
 
-  <div class="product" data-category="sweets">
-    <img src="47.png">
-    <div class="product-info">
-      <div class="product-title">Spaceman Wax Bottle Candy Blueberry</div>
-      <div class="price">£15.00</div>
-      <div class="qty">12 units / box</div>
+  <div class="side-foot">
+    <div class="delivery-box">
+      <label><i class="fas fa-calendar-alt"></i> Requested Delivery Date</label>
+      <input type="date" id="deliveryDate">
     </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="48.png">
-    <div class="product-info">
-      <div class="product-title">Spaceman Wax Bottle Candy Lyche</div>
-      <div class="price">£15.00</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="49.png">
-    <div class="product-info">
-      <div class="product-title">Spaceman Sour Wax Bear Candy Lyche</div>
-      <div class="price">£15.00</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="49.png">
-    <div class="product-info">
-      <div class="product-title">Spaceman Wax Bear Candy Mango</div>
-      <div class="price">£15.00</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="49.png">
-    <div class="product-info">
-      <div class="product-title">Spaceman Sour Wax Bear Candy Strawberry</div>
-      <div class="price">£15.00</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="50.png">
-    <div class="product-info">
-      <div class="product-title">Mystery Peelz Grape</div>
-      <div class="price">£21.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="51.png">
-    <div class="product-info">
-      <div class="product-title">Mystery Peelz Mango</div>
-      <div class="price">£21.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="51.png">
-    <div class="product-info">
-      <div class="product-title">Mystery Peelz Strawberry</div>
-      <div class="price">£21.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="top">
-    <img src="52.png">
-    <div class="product-info">
-      <div class="product-title">Peel Me Mango</div>
-      <div class="price">£18.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="top">
-    <img src="53.png">
-    <div class="product-info">
-      <div class="product-title">Peel Me Grape</div>
-      <div class="price">£18.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="top">
-    <img src="54.png">
-    <div class="product-info">
-      <div class="product-title">Peel Me Green Grape</div>
-      <div class="price">£18.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="top">
-    <img src="55.png">
-    <div class="product-info">
-      <div class="product-title">Peel Me Lyche</div>
-      <div class="price">£18.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="top">
-    <img src="56.png">
-    <div class="product-info">
-      <div class="product-title">Peel Me Blueberry</div>
-      <div class="price">£18.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="top">
-    <img src="57.png">
-    <div class="product-info">
-      <div class="product-title">Peel Me Strawberry</div>
-      <div class="price">£18.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="top">
-    <img src="58.png">
-    <div class="product-info">
-      <div class="product-title">Peel Me Raspberry</div>
-      <div class="price">£18.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="too">
-    <img src="59.png">
-    <div class="product-info">
-      <div class="product-title">Peel Me Peach</div>
-      <div class="price">£18.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="137.png">
-    <div class="product-info">
-      <div class="product-title">Thai Redbull Pomelo</div>
-      <div class="price">£21.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="138.png">
-    <div class="product-info">
-      <div class="product-title">Thai Redbull Apple & Muscat Grape</div>
-      <div class="price">£21.00</div>
-      <div class="qty">24 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="unique">
-    <img src="IMG_7418.png">
-    <div class="product-info">
-      <div class="product-title">Turbo Jet Spray</div>
-      <div class="price">£24.00</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="unique">
-    <img src="IMG_7539.png">
-    <div class="product-info">
-      <div class="product-title">Squishy Dumplings Normal</div>
-      <div class="price">£24.00</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="unique">
-    <img src="">
-    <div class="product-info">
-      <div class="product-title">Jello Vodka Shots</div>
-      <div class="price">£12.50 per bag/£140.00 per master case</div>
-      <div class="qty">1 bag = 25pcs/12 bags per master case</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="snacks">
-    <img src="1.png">
-    <div class="product-info">
-      <div class="product-title">Bingo Chips Salt & Vinegar</div>
-      <div class="price">£ NEED TO ASK PLUG</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="2.png">
-    <div class="product-info">
-      <div class="product-title">Bingo Chips Spicy Chicken</div>
-      <div class="price">£ NEED TO ASK PLUG</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="3.png">
-    <div class="product-info">
-      <div class="product-title">Bingo Chips Sour Cream & Onion</div>
-      <div class="price">£ NEED TO ASK PLUG</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="4.png">
-    <div class="product-info">
-      <div class="product-title">Bingo Chips Original</div>
-      <div class="price">£ NEED TO ASK PLUG</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="5.png">
-    <div class="product-info">
-      <div class="product-title">Samyang Chili & Lime</div>
-      <div class="price">£ NEED TO ASK PLUG</div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="unique">
-    <img src="6.png">
-    <div class="product-info">
-      <div class="product-title">Crazy Jo Large Banana Gummy</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="7.png">
-    <div class="product-info">
-      <div class="product-title">Thai Birthday Cake Cookies</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="8.png">
-    <div class="product-info">
-      <div class="product-title">Thai Raison & Chocolate Cookies</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="10.png">
-    <div class="product-info">
-      <div class="product-title">Crunchy Clouds Freeze Dried Candy</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="unique">
-    <img src="14.png">
-    <div class="product-info">
-      <div class="product-title">Salt Chip Challange</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="15.png">
-    <div class="product-info">
-      <div class="product-title">Sour Strips Cotton Candy</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="16.png">
-    <div class="product-info">
-      <div class="product-title">Sour Strips Strawberry</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="17.png">
-    <div class="product-info">
-      <div class="product-title">Sour Strips Green Apple</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="18.png">
-    <div class="product-info">
-      <div class="product-title">Sour Strips Melonade</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="19.png">
-    <div class="product-info">
-      <div class="product-title">Sour Strips Lemonberry</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="20.png">
-    <div class="product-info">
-      <div class="product-title">Sour Strips Watermelon</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="21.png">
-    <div class="product-info">
-      <div class="product-title">Sour Strips Cotton Candy</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="22.png">
-    <div class="product-info">
-      <div class="product-title">Sour Strips Tropical Mango</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="23.png">
-    <div class="product-info">
-      <div class="product-title">Juicy Hangosteen Soft Jelly Sweets</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="24.png">
-    <div class="product-info">
-      <div class="product-title">Juicy Green Grape Soft Jelly Sweets</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="25.png">
-    <div class="product-info">
-      <div class="product-title">Gupperz Boba Tea Blast</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="26.png">
-    <div class="product-info">
-      <div class="product-title">Gupperz Poppin' Pickles</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="27.png">
-    <div class="product-info">
-      <div class="product-title">Gupperz Confetti Cakesplosion</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="28.png">
-    <div class="product-info">
-      <div class="product-title">Super Sour Gushers</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="29.png">
-    <div class="product-info">
-      <div class="product-title">Gushers Blueberry Grape</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="30.png">
-    <div class="product-info">
-      <div class="product-title">Trolli Sour Brite Crawlers Fruit Punch</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="31.png">
-    <div class="product-info">
-      <div class="product-title">Trolli Sour Brite Eggs</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="32.png">
-    <div class="product-info">
-      <div class="product-title">Trolli Sour Duo Crawlers</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="33.png">
-    <div class="product-info">
-      <div class="product-title">Trolli Sour Brite Octopus</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="34.png">
-    <div class="product-info">
-      <div class="product-title">Cookie Dough Bites</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="35.png">
-    <div class="product-info">
-      <div class="product-title">Krabby Patties Minis</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="36.png">
-    <div class="product-info">
-      <div class="product-title">Sour Neon Bears</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="37.png">
-    <div class="product-info">
-      <div class="product-title">Jolly Rancher Hard Candy Blueraspberry</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="top">
-    <img src="38.png">
-    <div class="product-info">
-      <div class="product-title">Jolly Rancher Hard Candy Original</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="39.png">
-    <div class="product-info">
-      <div class="product-title">Jolly Rancher Hard Candy Tropical</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="40.png">
-    <div class="product-info">
-      <div class="product-title">Jolly Rancher Gummies Very Berry</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="41.png">
-    <div class="product-info">
-      <div class="product-title">Nerdy Gummy Clusters</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="42.png">
-    <div class="product-info">
-      <div class="product-title">Nerds Juicy Gummy Clusters</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="43.png">
-    <div class="product-info">
-      <div class="product-title">Nerds Gummy Clusters Limited Time</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="44.png">
-    <div class="product-info">
-      <div class="product-title">Nik'L'Nip Mini Drinks</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="45.png">
-    <div class="product-info">
-      <div class="product-title">Mystery Peelz Strawberry</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="60.png">
-    <div class="product-info">
-      <div class="product-title">Kaboom Jelly</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="sweets">
-    <img src="61.png">
-    <div class="product-info">
-      <div class="product-title">Heart Shaped Jelly</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="62.png">
-    <div class="product-info">
-      <div class="product-title">Jolly Rancher Chews Original</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="63.png">
-    <div class="product-info">
-      <div class="product-title">Freezies Kaboom Jelly</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="64.png">
-    <div class="product-info">
-      <div class="product-title">A&W Ice Cream Soda</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="65.png">
-    <div class="product-info">
-      <div class="product-title">Strawberry Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="66.png">
-    <div class="product-info">
-      <div class="product-title">Pineapple Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="67.png">
-    <div class="product-info">
-      <div class="product-title">Peach Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="68.png">
-    <div class="product-info">
-      <div class="product-title">Grape Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="69.png">
-    <div class="product-info">
-      <div class="product-title">Orange Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="70.png">
-    <div class="product-info">
-      <div class="product-title">Berry Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="71.png">
-    <div class="product-info">
-      <div class="product-title">Sunkist Orange</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="72.png">
-    <div class="product-info">
-      <div class="product-title">Big Red</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="73.png">
-    <div class="product-info">
-      <div class="product-title">Dr Pepper Cream Soda</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="74.png">
-    <div class="product-info">
-      <div class="product-title">Dr Pepper Strawberry & Cream</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="75.png">
-    <div class="product-info">
-      <div class="product-title">Ghost Electric Limeade</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="76.png">
-    <div class="product-info">
-      <div class="product-title">Ghost Sour Pink Lemonade</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="77.png">
-    <div class="product-info">
-      <div class="product-title">Ghost Welch's Grape</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="78.png">
-    <div class="product-info">
-      <div class="product-title">Ghost Strawbango</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="79.png">
-    <div class="product-info">
-      <div class="product-title">Ghost 'Merica Pop</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="80.png">
-    <div class="product-info">
-      <div class="product-title">Ghost Peaches</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="81.png">
-    <div class="product-info">
-      <div class="product-title">Ghost Bubilicious Strawberry Splash</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="82.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Fanta Grape</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="83.png">
-    <div class="product-info">
-      <div class="product-title">Ghost Sour Patch Kids Red Berry</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="84.png">
-    <div class="product-info">
-      <div class="product-title">Ghost Sour Patch Kids Blue Raspberry</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="85.png">
-    <div class="product-info">
-      <div class="product-title">Ghost Original</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="86.png">
-    <div class="product-info">
-      <div class="product-title">Ghost Swedish Fish</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="87.png">
-    <div class="product-info">
-      <div class="product-title">Air Heads Soda Orange</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="88.png">
-    <div class="product-info">
-      <div class="product-title">Twinkies Cookie Dough</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="89.png">
-    <div class="product-info">
-      <div class="product-title">Air Heads Soda Watermelon</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="90.png">
-    <div class="product-info">
-      <div class="product-title">Air Heads Soda Strawberry</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="91.png">
-    <div class="product-info">
-      <div class="product-title">Delight Iced Coffee Cinamon</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="92.png">
-    <div class="product-info">
-      <div class="product-title">Delight Iced Coffee Oreo</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="93.png">
-    <div class="product-info">
-      <div class="product-title">Delight Iced Coffee Chocolate</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="94.png">
-    <div class="product-info">
-      <div class="product-title">Canada Dry Fruit Splash</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="95.png">
-    <div class="product-info">
-      <div class="product-title">Peach Rings Peach Soda</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="96.png">
-    <div class="product-info">
-      <div class="product-title">Gummy Worm Sour Grape Soda</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="97.png">
-    <div class="product-info">
-      <div class="product-title">Watermelon Gummy Slides Watermelon Soda</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="98.png">
-    <div class="product-info">
-      <div class="product-title">Feastables Caramel</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="99.png">
-    <div class="product-info">
-      <div class="product-title">Dippo Mini Cone Fun</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="snacks">
-    <img src="100.png">
-    <div class="product-info">
-      <div class="product-title">Dippo Mini Cone Fun</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="snacks">
-    <img src="101.png">
-    <div class="product-info">
-      <div class="product-title">Dippo Mini Cone Fun</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="102.png">
-    <div class="product-info">
-      <div class="product-title">Dippo Mini Cone Fun</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="103.png">
-    <div class="product-info">
-      <div class="product-title">Brownie Brittle Chocolate Chip</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="104.png">
-    <div class="product-info">
-      <div class="product-title">Brownie Brittle M&M</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="105.png">
-    <div class="product-info">
-      <div class="product-title">Brownie Brittle Toffee Crunch</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="sweets">
-    <img src="106.png">
-    <div class="product-info">
-      <div class="product-title">Happy Marshmellow Freezies</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="107.png">
-    <div class="product-info">
-      <div class="product-title">Fanta Tropical</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="108.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Fanta Orange</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="109.png">
-    <div class="product-info">
-      <div class="product-title">Fanta Melon Soda</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="110.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Fanta Red Apple</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="111.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Fanta Green Grape</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="112.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Starbucks Peach Tea</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="113.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Starbucks Strawberry Tea</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="114.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Starbucks Cheese Late</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="115.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Starbucks Strawberry Black Current Black Tea</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="unique">
-    <img src="116.png">
-    <div class="product-info">
-      <div class="product-title">Beast Blue Raspberry Large Gummy</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="unique">
-    <img src="117.png">
-    <div class="product-info">
-      <div class="product-title">Giant Gamepad Gummy</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="unique">
-    <img src="118.png">
-    <div class="product-info">
-      <div class="product-title">Giant Prime Gummy</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="119.png">
-    <div class="product-info">
-      <div class="product-title">Liquid Death Sparkling Water</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="120.png">
-    <div class="product-info">
-      <div class="product-title">Cherry Coca Cola</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="unique">
-    <img src="121.png">
-    <div class="product-info">
-      <div class="product-title">Hotdog Fruit Flavour Giant Gummy</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="122.png">
-    <div class="product-info">
-      <div class="product-title">Korean Peach Ice Tea</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="123.png">
-    <div class="product-info">
-      <div class="product-title">Korean Omija Ade Iced Drink</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="124.png">
-    <div class="product-info">
-      <div class="product-title">Korean Hazelnut Iced Drink</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="125.png">
-    <div class="product-info">
-      <div class="product-title">Korean Pineapple Iced Tea</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="126.png">
-    <div class="product-info">
-      <div class="product-title">Korean Watermelon Iced Tea</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="127.png">
-    <div class="product-info">
-      <div class="product-title">Korean Bluelemon Iced Tea</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="128.png">
-    <div class="product-info">
-      <div class="product-title">Korean Americano Iced Drink</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="129.png">
-    <div class="product-info">
-      <div class="product-title">Korean Green Grape Iced Tea</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="130.png">
-    <div class="product-info">
-      <div class="product-title">Korean Vanilla Americano Iced Drink</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="131.png">
-    <div class="product-info">
-      <div class="product-title">Korean Black Iced Drink</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="132.png">
-    <div class="product-info">
-      <div class="product-title">AriZona Tropical ChillZicle</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="133.png">
-    <div class="product-info">
-      <div class="product-title">AriZona Kiwi Strawberry Fruit Juice Cocktail</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="134.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Grape Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="135.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Green Gape Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="136.png">
-    <div class="product-info">
-      <div class="product-title">250mg Redbull</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="139.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Grape Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="140.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Peach Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="drinks">
-    <img src="141.png">
-    <div class="product-info">
-      <div class="product-title">Japanese Grape Fanta Bottle</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="142.png">
-    <div class="product-info">
-      <div class="product-title">Mexican Orange Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="143.png">
-    <div class="product-info">
-      <div class="product-title">Mexican Coca Cola</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="144.png">
-    <div class="product-info">
-      <div class="product-title">Nigerian Fanta</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="145.png">
-    <div class="product-info">
-      <div class="product-title">Nigerian Sprite</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="drinks">
-    <img src="146.png">
-    <div class="product-info">
-      <div class="product-title">Nigerian Coca Cola</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="147.png">
-    <div class="product-info">
-      <div class="product-title">Pistachio Cotton Candy Milkchocolate</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="148.png">
-    <div class="product-info">
-      <div class="product-title">Pistachio Cotton Candy Ruby-Style Chocolate</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="149.png">
-    <div class="product-info">
-      <div class="product-title">Lotus Dubai Chocolate</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="snacks">
-    <img src="150.png">
-    <div class="product-info">
-      <div class="product-title">Oreo Dubai Chocolate</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-  
-  <div class="product" data-category="unique">
-    <img src="151.png">
-    <div class="product-info">
-      <div class="product-title">Hot Nut Challange</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
+    
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:800; font-size:1.1rem;">
+      <span>Estimated Total</span>
+      <span id="totalPrice">£0.00</span>
     </div>
-  </div>
 
-  <div class="product" data-category="snacks">
-    <img src="152.png">
-    <div class="product-info">
-      <div class="product-title">Kinder Dubai Chocolate</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="153.png">
-    <div class="product-info">
-      <div class="product-title">Samyang Spicy Chicken</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="154.png">
-    <div class="product-info">
-      <div class="product-title">Bingo Chips Lemon With Hot Chilli</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="155.png">
-    <div class="product-info">
-      <div class="product-title">Bingo Chips BBQ</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
-
-  <div class="product" data-category="snacks">
-    <img src="156.png">
-    <div class="product-info">
-      <div class="product-title">Bingo Chips Tomato</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
-    </div>
-  </div>
+    <button class="btn-whatsapp" onclick="app.sendWhatsApp()">
+      <i class="fab fa-whatsapp"></i> Send Quote Request
+    </button>
 
-  <div class="product" data-category="snacks">
-    <img src="157.png">
-    <div class="product-info">
-      <div class="product-title">Bingo Chips Cheddar Cheese</div>
-      <div class="price"></div>
-      <div class="qty">12 units / box</div>
+    <div class="template-btns">
+      <button class="btn-sub" onclick="app.saveTemplate()"><i class="fas fa-save"></i> Save Reorder</button>
+      <button class="btn-sub" onclick="app.loadTemplate()"><i class="fas fa-history"></i> Load Saved</button>
     </div>
   </div>
 </div>
+
+<nav class="mobile-nav">
+  <button class="nav-link active" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+    <i class="fas fa-th-large"></i>Catalogue
+  </button>
+  <button class="nav-link" onclick="app.toggleSidebar()">
+    <i class="fas fa-clipboard-list"></i>My Quote
+    <span class="cart-badge" id="badgeCount">0</span>
+  </button>
+  <button class="nav-link" onclick="window.print()">
+    <i class="fas fa-file-pdf"></i>PDF
+  </button>
+</nav>
 
 <script>
-  // Logic to filter by category
-  function runFilter(cat, btn) {
-    document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+  /* PRODUCT DATABASE 
+     Statuses: 'in-stock', 'low-stock', 'oos' (Out of stock)
+  */
+  const products = [
+    { id: 1, name: "M&M's Popcord", price: 33.00, pack: "12 units / box", cat: "top", img: "11.png" },
+    { id: 2, name: "Snickers Popcorn", price: 33.00, pack: "12 units / box", cat: "top", img: "12.png" },
+    { id: 3, name: "Oreo Popcorn", price: 33.00, pack: "12 units / box", cat: "top", img: "13.png" },
+    { id: 4, name: "Spaceman Sour Wax Bear Candy Blueberry", price: 15.00, pack: "12 units / box", cat: "sweets", img: "46.png" },
+    { id: 5, name: "Spaceman Wax Bottle Candy Blueberry", price: 15.00, pack: "12 units / box", cat: "sweets", img: "47.png" },
+    { id: 6, name: "Spaceman Wax Bottle Candy Lyche", price: 15.00, pack: "12 units / box", cat: "sweets", img: "48.png" },
+    { id: 7, name: "Spaceman Sour Wax Bear Candy Lyche", price: 15.00, pack: "12 units / box", cat: "sweets", img: "49.png" },
+    { id: 8, name: "Spaceman Wax Bear Candy Mango", price: 15.00, pack: "12 units / box", cat: "sweets", img: "49.png" },
+    { id: 9, name: "Spaceman Sour Wax Bear Candy Strawberry", price: 15.00, pack: "12 units / box", cat: "sweets", img: "49.png" },
+    { id: 10, name: "Mystery Peelz Grape", price: 21.00, pack: "24 units / box", cat: "sweets", img: "50.png" },
+    { id: 11, name: "Mystery Peelz Mango", price: 21.00, pack: "24 units / box", cat: "sweets", img: "51.png" },
+    { id: 12, name: "Mystery Peelz Strawberry", price: 21.00, pack: "24 units / box", cat: "sweets", img: "51.png" },
+    { id: 13, name: "Peel Me Mango", price: 18.00, pack: "24 units / box", cat: "top", img: "52.png" },
+    { id: 14, name: "Peel Me Grape", price: 18.00, pack: "24 units / box", cat: "top", img: "53.png" },
+    { id: 15, name: "Peel Me Green Grape", price: 18.00, pack: "24 units / box", cat: "top", img: "54.png" },
+    { id: 16, name: "Peel Me Lyche", price: 18.00, pack: "24 units / box", cat: "top", img: "55.png" },
+    { id: 17, name: "Peel Me Blueberry", price: 18.00, pack: "24 units / box", cat: "top", img: "56.png" },
+    { id: 18, name: "Peel Me Strawberry", price: 18.00, pack: "24 units / box", cat: "top", img: "57.png" },
+    { id: 19, name: "Peel Me Raspberry", price: 18.00, pack: "24 units / box", cat: "top", img: "58.png" },
+    { id: 20, name: "Peel Me Peach", price: 18.00, pack: "24 units / box", cat: "too", img: "59.png" },
+    { id: 21, name: "Thai Redbull Pomelo", price: 21.00, pack: "24 units / box", cat: "drinks", img: "137.png" },
+    { id: 22, name: "Thai Redbull Apple & Muscat Grape", price: 21.00, pack: "24 units / box", cat: "drinks", img: "138.png" },
+    { id: 23, name: "Turbo Jet Spray", price: 24.00, pack: "12 units / box", cat: "unique", img: "IMG_7418.png" },
+    { id: 24, name: "Squishy Dumplings Normal", price: 24.00, pack: "12 units / box", cat: "unique", img: "IMG_7539.png" },
+    { id: 25, name: "Jello Vodka Shots", price: 12.50, pack: "25pcs / bag", cat: "unique", img: "" },
+    { id: 26, name: "Bingo Chips Salt & Vinegar", price: 0, pack: "12 units / box", cat: "snacks", img: "1.png" },
+    { id: 27, name: "Bingo Chips Spicy Chicken", price: 0, pack: "12 units / box", cat: "snacks", img: "2.png" },
+    { id: 28, name: "Bingo Chips Sour Cream & Onion", price: 0, pack: "12 units / box", cat: "snacks", img: "3.png" },
+    { id: 29, name: "Bingo Chips Original", price: 0, pack: "12 units / box", cat: "snacks", img: "4.png" },
+    { id: 30, name: "Samyang Chili & Lime", price: 0, pack: "12 units / box", cat: "snacks", img: "5.png" },
+    { id: 31, name: "Crazy Jo Large Banana Gummy", price: 0, pack: "12 units / box", cat: "unique", img: "6.png" },
+    { id: 32, name: "Thai Birthday Cake Cookies", price: 0, pack: "12 units / box", cat: "snacks", img: "7.png" },
+    { id: 33, name: "Thai Raison & Chocolate Cookies", price: 0, pack: "12 units / box", cat: "snacks", img: "8.png" },
+    { id: 34, name: "Crunchy Clouds Freeze Dried Candy", price: 0, pack: "12 units / box", cat: "sweets", img: "10.png" },
+    { id: 35, name: "Salt Chip Challange", price: 0, pack: "12 units / box", cat: "unique", img: "14.png" },
+    { id: 36, name: "Sour Strips Cotton Candy", price: 0, pack: "12 units / box", cat: "sweets", img: "15.png" },
+    { id: 37, name: "Sour Strips Strawberry", price: 0, pack: "12 units / box", cat: "sweets", img: "16.png" },
+    { id: 38, name: "Sour Strips Green Apple", price: 0, pack: "12 units / box", cat: "sweets", img: "17.png" },
+    { id: 39, name: "Sour Strips Melonade", price: 0, pack: "12 units / box", cat: "sweets", img: "18.png" },
+    { id: 40, name: "Sour Strips Lemonberry", price: 0, pack: "12 units / box", cat: "sweets", img: "19.png" },
+    { id: 41, name: "Sour Strips Watermelon", price: 0, pack: "12 units / box", cat: "sweets", img: "20.png" },
+    { id: 42, name: "Sour Strips Cotton Candy (Alt)", price: 0, pack: "12 units / box", cat: "sweets", img: "21.png" },
+    { id: 43, name: "Sour Strips Tropical Mango", price: 0, pack: "12 units / box", cat: "sweets", img: "22.png" },
+    { id: 44, name: "Juicy Hangosteen Soft Jelly Sweets", price: 0, pack: "12 units / box", cat: "sweets", img: "23.png" },
+    { id: 45, name: "Juicy Green Grape Soft Jelly Sweets", price: 0, pack: "12 units / box", cat: "sweets", img: "24.png" },
+    { id: 46, name: "Gupperz Boba Tea Blast", price: 0, pack: "12 units / box", cat: "sweets", img: "25.png" },
+    { id: 47, name: "Gupperz Poppin' Pickles", price: 0, pack: "12 units / box", cat: "sweets", img: "26.png" },
+    { id: 48, name: "Gupperz Confetti Cakesplosion", price: 0, pack: "12 units / box", cat: "sweets", img: "27.png" },
+    { id: 49, name: "Super Sour Gushers", price: 0, pack: "12 units / box", cat: "sweets", img: "28.png" },
+    { id: 50, name: "Gushers Blueberry Grape", price: 0, pack: "12 units / box", cat: "sweets", img: "29.png" },
+    { id: 51, name: "Trolli Sour Brite Crawlers Fruit Punch", price: 0, pack: "12 units / box", cat: "sweets", img: "30.png" },
+    { id: 52, name: "Trolli Sour Brite Eggs", price: 0, pack: "12 units / box", cat: "sweets", img: "31.png" },
+    { id: 53, name: "Trolli Sour Duo Crawlers", price: 0, pack: "12 units / box", cat: "sweets", img: "32.png" },
+    { id: 54, name: "Trolli Sour Brite Octopus", price: 0, pack: "12 units / box", cat: "sweets", img: "33.png" },
+    { id: 55, name: "Cookie Dough Bites", price: 0, pack: "12 units / box", cat: "sweets", img: "34.png" },
+    { id: 56, name: "Krabby Patties Minis", price: 0, pack: "12 units / box", cat: "sweets", img: "35.png" },
+    { id: 57, name: "Sour Neon Bears", price: 0, pack: "12 units / box", cat: "sweets", img: "36.png" },
+    { id: 58, name: "Jolly Rancher Hard Candy Blueraspberry", price: 0, pack: "12 units / box", cat: "sweets", img: "37.png" },
+    { id: 59, name: "Jolly Rancher Hard Candy Original", price: 0, pack: "12 units / box", cat: "top", img: "38.png" },
+    { id: 60, name: "Jolly Rancher Hard Candy Tropical", price: 0, pack: "12 units / box", cat: "sweets", img: "39.png" },
+    { id: 61, name: "Jolly Rancher Gummies Very Berry", price: 0, pack: "12 units / box", cat: "sweets", img: "40.png" },
+    { id: 62, name: "Nerdy Gummy Clusters", price: 0, pack: "12 units / box", cat: "sweets", img: "41.png" },
+    { id: 63, name: "Nerds Juicy Gummy Clusters", price: 0, pack: "12 units / box", cat: "sweets", img: "42.png" },
+    { id: 64, name: "Nerds Gummy Clusters Limited Time", price: 0, pack: "12 units / box", cat: "sweets", img: "43.png" },
+    { id: 65, name: "Nik'L'Nip Mini Drinks", price: 0, pack: "12 units / box", cat: "sweets", img: "44.png" },
+    { id: 66, name: "Mystery Peelz Strawberry (Alt)", price: 0, pack: "12 units / box", cat: "sweets", img: "45.png" },
+    { id: 67, name: "Kaboom Jelly", price: 0, pack: "12 units / box", cat: "sweets", img: "60.png" },
+    { id: 68, name: "Heart Shaped Jelly", price: 0, pack: "12 units / box", cat: "sweets", img: "61.png" },
+    { id: 69, name: "Jolly Rancher Chews Original", price: 0, pack: "12 units / box", cat: "sweets", img: "62.png" },
+    { id: 70, name: "Freezies Kaboom Jelly", price: 0, pack: "12 units / box", cat: "sweets", img: "63.png" },
+    { id: 71, name: "A&W Ice Cream Soda", price: 0, pack: "12 units / box", cat: "drinks", img: "64.png" },
+    { id: 72, name: "Strawberry Fanta", price: 0, pack: "12 units / box", cat: "drinks", img: "65.png" },
+    { id: 73, name: "Pineapple Fanta", price: 0, pack: "12 units / box", cat: "drinks", img: "66.png" },
+    { id: 74, name: "Peach Fanta", price: 0, pack: "12 units / box", cat: "drinks", img: "67.png" },
+    { id: 75, name: "Grape Fanta", price: 0, pack: "12 units / box", cat: "drinks", img: "68.png" },
+    { id: 76, name: "Orange Fanta", price: 0, pack: "12 units / box", cat: "drinks", img: "69.png" },
+    { id: 77, name: "Berry Fanta", price: 0, pack: "12 units / box", cat: "drinks", img: "70.png" },
+    { id: 78, name: "Sunkist Orange", price: 0, pack: "12 units / box", cat: "drinks", img: "71.png" },
+    { id: 79, name: "Big Red", price: 0, pack: "12 units / box", cat: "drinks", img: "72.png" },
+    { id: 80, name: "Dr Pepper Cream Soda", price: 0, pack: "12 units / box", cat: "drinks", img: "73.png" },
+    { id: 81, name: "Dr Pepper Strawberry & Cream", price: 0, pack: "12 units / box", cat: "drinks", img: "74.png" },
+    { id: 82, name: "Ghost Electric Limeade", price: 0, pack: "12 units / box", cat: "drinks", img: "75.png" },
+    { id: 83, name: "Ghost Sour Pink Lemonade", price: 0, pack: "12 units / box", cat: "drinks", img: "76.png" },
+    { id: 84, name: "Ghost Welch's Grape", price: 0, pack: "12 units / box", cat: "drinks", img: "77.png" },
+    { id: 85, name: "Ghost Strawbango", price: 0, pack: "12 units / box", cat: "drinks", img: "78.png" },
+    { id: 86, name: "Ghost 'Merica Pop", price: 0, pack: "12 units / box", cat: "drinks", img: "79.png" },
+    { id: 87, name: "Ghost Peaches", price: 0, pack: "12 units / box", cat: "drinks", img: "80.png" },
+    { id: 88, name: "Ghost Bubilicious Strawberry Splash", price: 0, pack: "12 units / box", cat: "drinks", img: "81.png" },
+    { id: 89, name: "Japanese Fanta Grape", price: 0, pack: "12 units / box", cat: "drinks", img: "82.png" },
+    { id: 90, name: "Ghost Sour Patch Kids Red Berry", price: 0, pack: "12 units / box", cat: "drinks", img: "83.png" },
+    { id: 91, name: "Ghost Sour Patch Kids Blue Raspberry", price: 0, pack: "12 units / box", cat: "drinks", img: "84.png" },
+    { id: 92, name: "Ghost Original", price: 0, pack: "12 units / box", cat: "drinks", img: "85.png" },
+    { id: 93, name: "Ghost Swedish Fish", price: 0, pack: "12 units / box", cat: "drinks", img: "86.png" },
+    { id: 94, name: "Air Heads Soda Orange", price: 0, pack: "12 units / box", cat: "drinks", img: "87.png" },
+    { id: 95, name: "Twinkies Cookie Dough", price: 0, pack: "12 units / box", cat: "drinks", img: "88.png" },
+    { id: 96, name: "Air Heads Soda Watermelon", price: 0, pack: "12 units / box", cat: "drinks", img: "89.png" },
+    { id: 97, name: "Air Heads Soda Strawberry", price: 0, pack: "12 units / box", cat: "drinks", img: "90.png" },
+    { id: 98, name: "Delight Iced Coffee Cinamon", price: 0, pack: "12 units / box", cat: "drinks", img: "91.png" },
+    { id: 99, name: "Delight Iced Coffee Oreo", price: 0, pack: "12 units / box", cat: "drinks", img: "92.png" },
+    { id: 100, name: "Delight Iced Coffee Chocolate", price: 0, pack: "12 units / box", cat: "drinks", img: "93.png" },
+    { id: 101, name: "Canada Dry Fruit Splash", price: 0, pack: "12 units / box", cat: "drinks", img: "94.png" },
+    { id: 102, name: "Peach Rings Peach Soda", price: 0, pack: "12 units / box", cat: "drinks", img: "95.png" },
+    { id: 103, name: "Gummy Worm Sour Grape Soda", price: 0, pack: "12 units / box", cat: "drinks", img: "96.png" },
+    { id: 104, name: "Watermelon Gummy Slides Watermelon Soda", price: 0, pack: "12 units / box", cat: "drinks", img: "97.png" },
+    { id: 105, name: "Feastables Caramel", price: 0, pack: "12 units / box", cat: "snacks", img: "98.png" },
+    { id: 106, name: "Dippo Mini Cone Fun (1)", price: 0, pack: "12 units / box", cat: "snacks", img: "99.png" },
+    { id: 107, name: "Dippo Mini Cone Fun (2)", price: 0, pack: "12 units / box", cat: "snacks", img: "100.png" },
+    { id: 108, name: "Dippo Mini Cone Fun (3)", price: 0, pack: "12 units / box", cat: "snacks", img: "101.png" },
+    { id: 109, name: "Dippo Mini Cone Fun (4)", price: 0, pack: "12 units / box", cat: "snacks", img: "102.png" },
+    { id: 110, name: "Brownie Brittle Chocolate Chip", price: 0, pack: "12 units / box", cat: "snacks", img: "103.png" },
+    { id: 111, name: "Brownie Brittle Toffee Crunch", price: 0, pack: "12 units / box", cat: "snacks", img: "105.png" },
+    { id: 112, name: "Happy Marshmellow Freezies", price: 0, pack: "12 units / box", cat: "sweets", img: "106.png" },
+    { id: 113, name: "Fanta Tropical", price: 0, pack: "12 units / box", cat: "drinks", img: "107.png" },
+    { id: 114, name: "Japanese Fanta Orange", price: 0, pack: "12 units / box", cat: "drinks", img: "108.png" },
+    { id: 115, name: "Fanta Melon Soda", price: 0, pack: "12 units / box", cat: "drinks", img: "109.png" },
+    { id: 116, name: "Japanese Fanta Red Apple", price: 0, pack: "12 units / box", cat: "drinks", img: "110.png" },
+    { id: 117, name: "Japanese Fanta Green Grape", price: 0, pack: "12 units / box", cat: "drinks", img: "111.png" },
+    { id: 118, name: "Japanese Starbucks Peach Tea", price: 0, pack: "12 units / box", cat: "drinks", img: "112.png" },
+    { id: 119, name: "Japanese Starbucks Strawberry Tea", price: 0, pack: "12 units / box", cat: "drinks", img: "113.png" },
+    { id: 120, name: "Japanese Starbucks Cheese Late", price: 0, pack: "12 units / box", cat: "drinks", img: "114.png" },
+    { id: 121, name: "Japanese Starbucks Strawberry Black Current Black Tea", price: 0, pack: "12 units / box", cat: "drinks", img: "115.png" },
+    { id: 122, name: "Beast Blue Raspberry Large Gummy", price: 0, pack: "12 units / box", cat: "unique", img: "116.png" },
+    { id: 123, name: "Giant Gamepad Gummy", price: 0, pack: "12 units / box", cat: "unique", img: "117.png" },
+    { id: 124, name: "Giant Prime Gummy", price: 0, pack: "12 units / box", cat: "unique", img: "118.png" },
+    { id: 125, name: "Liquid Death Sparkling Water", price: 0, pack: "12 units / box", cat: "drinks", img: "119.png" },
+    { id: 126, name: "Cherry Coca Cola", price: 0, pack: "12 units / box", cat: "drinks", img: "120.png" },
+    { id: 127, name: "Hotdog Fruit Flavour Giant Gummy", price: 0, pack: "12 units / box", cat: "unique", img: "121.png" },
+    { id: 128, name: "Korean Peach Ice Tea", price: 0, pack: "12 units / box", cat: "drinks", img: "122.png" },
+    { id: 129, name: "Korean Omija Ade Iced Drink", price: 0, pack: "12 units / box", cat: "drinks", img: "123.png" },
+    { id: 130, name: "Korean Hazelnut Iced Drink", price: 0, pack: "12 units / box", cat: "drinks", img: "124.png" },
+    { id: 131, name: "Korean Pineapple Iced Tea", price: 0, pack: "12 units / box", cat: "drinks", img: "125.png" },
+    { id: 132, name: "Korean Watermelon Iced Tea", price: 0, pack: "12 units / box", cat: "drinks", img: "126.png" },
+    { id: 133, name: "Korean Bluelemon Iced Tea", price: 0, pack: "12 units / box", cat: "drinks", img: "127.png" },
+    { id: 134, name: "Korean Americano Iced Drink", price: 0, pack: "12 units / box", cat: "drinks", img: "128.png" },
+    { id: 135, name: "Korean Green Grape Iced Tea", price: 0, pack: "12 units / box", cat: "drinks", img: "129.png" },
+    { id: 136, name: "Korean Vanilla Americano Iced Drink", price: 0, pack: "12 units / box", cat: "drinks", img: "130.png" },
+    { id: 137, name: "Korean Black Iced Drink", price: 0, pack: "12 units / box", cat: "drinks", img: "131.png" },
+    { id: 138, name: "AriZona Tropical ChillZicle", price: 0, pack: "12 units / box", cat: "drinks", img: "132.png" },
+    { id: 139, name: "AriZona Kiwi Strawberry Fruit Juice Cocktail", price: 0, pack: "12 units / box", cat: "drinks", img: "133.png" },
+    { id: 140, name: "Japanese Grape Fanta (Can)", price: 0, pack: "12 units / box", cat: "drinks", img: "134.png" },
+    { id: 141, name: "Japanese Green Gape Fanta", price: 0, pack: "12 units / box", cat: "drinks", img: "135.png" },
+    { id: 142, name: "250mg Redbull", price: 0, pack: "12 units / box", cat: "drinks", img: "136.png" },
+    { id: 143, name: "Japanese Grape Fanta (Alt)", price: 0, pack: "12 units / box", cat: "drinks", img: "139.png" },
+    { id: 144, name: "Japanese Peach Fanta", price: 0, pack: "12 units / box", cat: "drinks", img: "140.png" },
+    { id: 145, name: "Japanese Grape Fanta Bottle", price: 0, pack: "12 units / box", cat: "drinks", img: "141.png" },
+    { id: 146, name: "Mexican Orange Fanta", price: 0, pack: "12 units / box", cat: "drinks", img: "142.png" },
+    { id: 147, name: "Mexican Coca Cola", price: 0, pack: "12 units / box", cat: "drinks", img: "143.png" },
+    { id: 148, name: "Nigerian Fanta", price: 0, pack: "12 units / box", cat: "drinks", img: "144.png" },
+    { id: 149, name: "Nigerian Sprite", price: 0, pack: "12 units / box", cat: "drinks", img: "145.png" },
+    { id: 150, name: "Nigerian Coca Cola", price: 0, pack: "12 units / box", cat: "drinks", img: "146.png" },
+    { id: 151, name: "Pistachio Cotton Candy Milkchocolate", price: 0, pack: "12 units / box", cat: "snacks", img: "147.png" },
+    { id: 152, name: "Pistachio Cotton Candy Ruby-Style Chocolate", price: 0, pack: "12 units / box", cat: "snacks", img: "148.png" },
+    { id: 153, name: "Lotus Dubai Chocolate", price: 0, pack: "12 units / box", cat: "snacks", img: "149.png" },
+    { id: 154, name: "Oreo Dubai Chocolate", price: 0, pack: "12 units / box", cat: "snacks", img: "150.png" },
+    { id: 155, name: "Hot Nut Challange", price: 0, pack: "12 units / box", cat: "unique", img: "151.png" },
+    { id: 156, name: "Kinder Dubai Chocolate", price: 0, pack: "12 units / box", cat: "snacks", img: "152.png" },
+    { id: 157, name: "Samyang Spicy Chicken", price: 0, pack: "12 units / box", cat: "snacks", img: "153.png" },
+    { id: 158, name: "Bingo Chips Lemon With Hot Chilli", price: 0, pack: "12 units / box", cat: "snacks", img: "154.png" },
+    { id: 159, name: "Bingo Chips BBQ", price: 0, pack: "12 units / box", cat: "snacks", img: "155.png" },
+    { id: 160, name: "Bingo Chips Tomato", price: 0, pack: "12 units / box", cat: "snacks", img: "156.png" },
+    { id: 161, name: "Bingo Chips Cheddar Cheese", price: 0, pack: "12 units / box", cat: "snacks", img: "157.png" }
+  ];
 
-    const products = document.querySelectorAll('.product');
-    products.forEach(p => {
-      if (cat === 'all' || p.getAttribute('data-category') === cat) {
-        p.style.display = "flex";
-      } else {
-        p.style.display = "none";
+  const app = {
+    quote: JSON.parse(localStorage.getItem('currentQuote')) || [],
+    filter: 'all',
+
+    init() {
+      this.render();
+      this.updateUI();
+    },
+
+    setFilter(cat, btn) {
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      this.filter = cat;
+      this.render();
+    },
+
+    render() {
+      const grid = document.getElementById('mainGrid');
+      const query = document.getElementById('search').value.toLowerCase();
+      
+      const filtered = products.filter(p => {
+        const matchesCat = (this.filter === 'all' || p.cat === this.filter);
+        const matchesSearch = p.name.toLowerCase().includes(query);
+        return matchesCat && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--slate);">
+          <i class="fas fa-search fa-3x" style="opacity:0.2; margin-bottom:15px;"></i>
+          <p>No products found matching your search.</p>
+        </div>`;
+        return;
       }
-    });
-  }
 
-  // Logic to search by typing
-  function runSearch() {
-    let query = document.getElementById('shopSearch').value.toLowerCase();
-    const products = document.querySelectorAll('.product');
-    
-    products.forEach(p => {
-      let title = p.querySelector('.product-title').innerText.toLowerCase();
-      p.style.display = title.includes(query) ? "flex" : "none";
-    });
-  }
+      grid.innerHTML = filtered.map(p => {
+        const inQuote = this.quote.find(item => item.id === p.id);
+        const isOOS = p.status === 'oos';
+        
+        return `
+          <div class="card">
+            ${p.status === 'oos' ? '<span class="status-badge status-oos">Out of Stock</span>' : ''}
+            ${p.status === 'low-stock' ? '<span class="status-badge status-low">Limited</span>' : ''}
+            <div class="img-hold">
+              <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200?text=Product'">
+            </div>
+            <div class="pack-info">${p.pack}</div>
+            <h3>${p.name}</h3>
+            <div class="price-tag">£${p.price.toFixed(2)}</div>
+            <button class="btn-add ${inQuote ? 'added' : ''}" 
+                    onclick="app.addToQuote(${p.id})" 
+                    ${isOOS ? 'disabled' : ''}>
+              ${isOOS ? 'Out of Stock' : (inQuote ? '<i class="fas fa-check"></i> Added' : '<i class="fas fa-plus"></i> Add to Quote')}
+            </button>
+          </div>
+        `;
+      }).join('');
+    },
+
+    addToQuote(id) {
+      const existing = this.quote.find(i => i.id === id);
+      if (existing) {
+        this.toggleSidebar(); // If exists, just show them the list
+      } else {
+        const p = products.find(prod => prod.id === id);
+        this.quote.push({ ...p, qty: 1 });
+        this.save();
+        this.render();
+        this.updateUI();
+      }
+    },
+
+    updateQty(id, delta) {
+      const item = this.quote.find(i => i.id === id);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) this.quote = this.quote.filter(i => i.id !== id);
+        this.save();
+        this.updateUI();
+        this.render();
+      }
+    },
+
+    save() {
+      localStorage.setItem('currentQuote', JSON.stringify(this.quote));
+    },
+
+    saveTemplate() {
+      if (this.quote.length === 0) return alert("Add items to your quote first!");
+      localStorage.setItem('wholesaleTemplate', JSON.stringify(this.quote));
+      alert("Template Saved! You can load this list next time you visit.");
+    },
+
+    loadTemplate() {
+      const template = localStorage.getItem('wholesaleTemplate');
+      if (template) {
+        this.quote = JSON.parse(template);
+        this.save();
+        this.updateUI();
+        this.render();
+        alert("Previous order loaded.");
+      } else {
+        alert("No saved reorder found.");
+      }
+    },
+
+    updateUI() {
+      const list = document.getElementById('quoteList');
+      const totalCount = this.quote.reduce((sum, i) => sum + i.qty, 0);
+      const totalCost = this.quote.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      
+      document.getElementById('badgeCount').innerText = totalCount;
+      document.getElementById('totalPrice').innerText = `£${totalCost.toFixed(2)}`;
+
+      if (this.quote.length === 0) {
+        list.innerHTML = `<div style="text-align:center; padding:40px; color:var(--slate);">
+          <i class="fas fa-shopping-basket fa-3x" style="opacity:0.1; margin-bottom:15px;"></i>
+          <p>Your quote request is empty.</p>
+        </div>`;
+      } else {
+        list.innerHTML = this.quote.map(item => `
+          <div class="q-item">
+            <img src="${item.img}" onerror="this.src='https://via.placeholder.com/60'">
+            <div class="q-info">
+              <h4>${item.name}</h4>
+              <div class="qty-controls">
+                <button class="qty-btn" onclick="app.updateQty(${item.id}, -1)">-</button>
+                <span style="font-weight:800">${item.qty}</span>
+                <button class="qty-btn" onclick="app.updateQty(${item.id}, 1)">+</button>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:800; color:var(--primary);">£${(item.price * item.qty).toFixed(2)}</div>
+              <button onclick="app.updateQty(${item.id}, -1000)" style="background:none; border:none; color:#ef4444; margin-top:10px; cursor:pointer;"><i class="fas fa-trash-alt"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+    },
+
+    toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('active');
+    },
+
+    sendWhatsApp() {
+      if (this.quote.length === 0) return alert("Your quote is empty!");
+      
+      const phone = "447366341300";
+      const deliveryDate = document.getElementById('deliveryDate').value || "ASAP";
+      
+      let message = `*WHOLESALE ORDER REQUEST*\n`;
+      message += `Requested Date: ${deliveryDate}\n`;
+      message += `--------------------------\n`;
+      
+      this.quote.forEach(i => {
+        message += `📦 *${i.qty}x* ${i.name}\n   (Ref: ${i.pack})\n\n`;
+      });
+      
+      message += `--------------------------\n`;
+      message += `*Total Estimated: ${document.getElementById('totalPrice').innerText}*`;
+      
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+  };
+
+  app.init();
 </script>
 
 </body>
