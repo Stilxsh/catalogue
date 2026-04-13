@@ -3,240 +3,283 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Premium Catalogue</title>
-
+  <title>The Shop | Premium Catalogue</title>
   <style>
     :root {
-      /* Brighter, more energetic color palette */
-      --primary: #22c55e;
-      --primary-hover: #16a34a;
-      --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-      --card-bg: rgba(255, 255, 255, 0.9);
-      --text-main: #1f2937;
-      --text-muted: #6b7280;
-      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.2);
+      --accent: #3b82f6;
+      --bg: #f8fafc;
+      --glass: rgba(255, 255, 255, 0.8);
+      --text-dark: #0f172a;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg-gradient);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
       background-attachment: fixed;
-      color: var(--text-main);
-      min-height: 100vh;
-      line-height: 1.5;
+      color: var(--text-dark);
+      overflow-x: hidden;
     }
 
+    /* --- STICKY MODERN HEADER --- */
     header {
-      padding: 3rem 1rem;
+      padding: 2rem 1rem;
       text-align: center;
-      background: white;
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
-      border-bottom: 3px solid var(--primary);
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
+    .logo-area img { height: 60px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+    
     header h1 {
-      font-size: 2.5rem;
-      color: #111827;
-      margin-top: 1rem;
-      letter-spacing: -1px;
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-top: 0.5rem;
     }
 
-    header p {
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .controls {
+    /* --- SEARCH & FILTERS --- */
+    .controls-container {
       max-width: 1200px;
-      margin: 0 auto 2rem auto;
-      padding: 0 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
+      margin: 2rem auto;
+      padding: 0 1rem;
     }
 
-    /* Modern Button Styling */
-    .filter-btn, .pdf-btn {
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 50px; /* Rounded pill shape */
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      font-size: 0.9rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-    .filter-btn {
+    .search-bar {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.1);
       background: white;
-      color: var(--text-main);
-      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s ease;
     }
 
-    .filter-btn:hover {
-      background: #f3f4f6;
-      transform: translateY(-2px);
-    }
-
-    .filter-btn.active {
-      background: var(--primary);
-      color: white;
+    .search-bar:focus {
       border-color: var(--primary);
-      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+      box-shadow: 0 0 0 4px var(--primary-glow);
     }
+
+    .filter-wrapper {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* --- BUTTONS --- */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-btn { background: white; color: #64748b; border: 1px solid #e2e8f0; }
+    .filter-btn:hover { background: #f1f5f9; transform: translateY(-2px); }
+    .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
     .pdf-btn {
-      background: #111827;
+      background: var(--text-dark);
       color: white;
+      margin: 2rem auto;
     }
 
-    .pdf-btn:hover {
-      background: #374151;
-      transform: scale(1.05);
-    }
-
+    /* --- PRODUCT GRID --- */
     .container {
       max-width: 1200px;
       margin: auto;
-      padding: 0 1.5rem 3rem 1.5rem;
+      padding: 1rem;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 2rem;
     }
 
-    /* Animated Product Cards */
-    .product {
-      background: var(--card-bg);
-      border-radius: 20px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid rgba(255,255,255,0.3);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
+    .product-card {
+      background: white;
+      border-radius: 24px;
+      padding: 12px;
+      transition: all 0.4s ease;
+      border: 1px solid rgba(0,0,0,0.03);
+      position: relative;
     }
 
-    .product:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    .product-card:hover {
+      transform: translateY(-12px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
     }
 
-    .product img {
+    .img-container {
       width: 100%;
       height: 220px;
-      object-fit: cover; /* Changed to cover for a fuller look */
-      transition: transform 0.5s ease;
+      border-radius: 18px;
+      background: #f1f5f9;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .product:hover img {
-      transform: scale(1.05);
+    .product-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Keeps product aspect ratio perfect */
+      transition: transform 0.6s ease;
     }
 
-    .product-info {
-      padding: 1.5rem;
-    }
+    .product-card:hover img { transform: scale(1.1); }
 
-    .product-title {
-      font-size: 1.1rem;
+    .details { padding: 1rem 0.5rem; }
+    
+    .tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
       font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: #111827;
+      color: var(--primary);
+      letter-spacing: 1px;
     }
 
-    .meta {
+    .title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 4px 0;
+      color: var(--text-dark);
+    }
+
+    .footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 12px;
     }
 
-    .price {
-      color: var(--primary);
-      font-size: 1.25rem;
+    .price-tag {
+      font-size: 1.4rem;
       font-weight: 800;
+      color: var(--text-dark);
     }
 
-    .qty {
-      background: #f3f4f6;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+    .stock-pill {
+      background: #ecfdf5;
+      color: #059669;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
 
-    /* Print/PDF logic remains the same but cleaned up */
-    .pdf-header { display: none; }
-
+    /* Print Logic */
     @media print {
-      body { background: white; }
-      header, .controls { display: none; }
-      .pdf-header {
-        display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 2px solid #000; padding: 10px 0; margin-bottom: 20px;
-      }
-      .container { display: block; }
-      .product {
-        display: flex; border: 1px solid #eee; margin-bottom: 10px;
-        box-shadow: none; transform: none !important;
-      }
-      .product img { width: 100px; height: 100px; }
+      .search-bar, .filter-wrapper, .pdf-btn { display: none; }
+      header { position: relative; background: white; }
+      .product-card { border: 1px solid #eee; break-inside: avoid; }
     }
   </style>
 </head>
-
 <body>
 
 <header>
-  <img src="logo.png" alt="Logo" style="height: 60px;">
-  <h1>Product Catalogue</h1>
-  <p>The Shop Networks • 07123 456789</p>
+  <div class="logo-area">
+    <img src="logo.png" alt="Logo">
+  </div>
+  <h1>Premium Catalogue</h1>
+  <p>The Shop Networks • Professional Wholesale</p>
 </header>
 
-<div class="controls">
-  <div class="filter-group">
-    <button class="filter-btn active" onclick="filterProducts('all', this)">All</button>
-    <button class="filter-btn" onclick="filterProducts('drinks', this)">Drinks</button>
-    <button class="filter-btn" onclick="filterProducts('sweets', this)">Sweets</button>
-    <button class="filter-btn" onclick="filterProducts('snacks', this)">Snacks</button>
-    <button class="filter-btn" onclick="filterProducts('unique', this)">Unique</button>
-  </div>
-
-  <button class="pdf-btn" onclick="window.print()">Download PDF</button>
-</div>
-
-<div class="pdf-header">
-  <div class="pdf-left">
-    <img src="logo.png" height="40">
-    <div style="font-weight:bold">Wholesale Catalogue</div>
-  </div>
-  <div style="text-align:right; font-size: 12px;">
-    The Shop Trading LTD • 07123 456789
+<div class="controls-container">
+  <input type="text" class="search-bar" placeholder="Search products (e.g. Candy, Cola...)" onkeyup="search()">
+  
+  <div class="filter-wrapper">
+    <button class="btn filter-btn active" onclick="filter('all', this)">All Items</button>
+    <button class="btn filter-btn" onclick="filter('drinks', this)">Drinks</button>
+    <button class="btn filter-btn" onclick="filter('sweets', this)">Sweets</button>
+    <button class="btn filter-btn" onclick="filter('snacks', this)">Snacks</button>
   </div>
 </div>
 
-<div class="container" id="productGrid">
-  <div class="product">
-    <img src="https://via.placeholder.com/300x200" alt="Product">
-    <div class="product-info">
-      <div class="product-title">Refreshing Soda</div>
-      <div class="meta">
-        <span class="price">£1.50</span>
-        <span class="qty">In Stock</span>
+<div class="container">
+  <div class="product-card" data-category="drinks">
+    <div class="img-container">
+      <img src="https://via.placeholder.com/250x250/f1f5f9/0f172a?text=Drink+Sample" alt="Drink">
+    </div>
+    <div class="details">
+      <span class="tag">Imported Drink</span>
+      <div class="title">Blue Raspberry Soda</div>
+      <div class="footer">
+        <span class="price-tag">£1.85</span>
+        <span class="stock-pill">Available</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-card" data-category="sweets">
+    <div class="img-container">
+      <img src="https://via.placeholder.com/250x250/f1f5f9/0f172a?text=Sweet+Sample" alt="Sweet">
+    </div>
+    <div class="details">
+      <span class="tag">Confectionery</span>
+      <div class="title">Gummy Mix XL</div>
+      <div class="footer">
+        <span class="price-tag">£2.50</span>
+        <span class="stock-pill">Available</span>
       </div>
     </div>
   </div>
 </div>
 
+<center>
+  <button class="btn pdf-btn" onclick="window.print()">
+    <span>📄</span> Export to PDF
+  </button>
+</center>
+
 <script>
-  // Simple function to handle active button state
-  function filterProducts(category, btn) {
+  function filter(cat, el) {
+    // Button Toggle
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    console.log("Filtering for: " + category);
-    // Add your filtering logic here
+    el.classList.add('active');
+    
+    // Filtering Logic
+    const cards = document.querySelectorAll('.product-card');
+    cards.forEach(card => {
+      if(cat === 'all' || card.getAttribute('data-category') === cat) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }
+
+  function search() {
+    let input = document.querySelector('.search-bar').value.toLowerCase();
+    let cards = document.querySelectorAll('.product-card');
+    
+    cards.forEach(card => {
+      let title = card.querySelector('.title').innerText.toLowerCase();
+      card.style.display = title.includes(input) ? "block" : "none";
+    });
   }
 </script>
 
