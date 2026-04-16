@@ -218,8 +218,7 @@
     <button onclick="app.toggleSidebar(false)" style="border:none; background:none; font-size: 2rem;">&times;</button>
   </div>
   
-  <div class="side-body" id="quoteList">
-    </div>
+  <div class="side-body" id="quoteList"></div>
 
   <div class="side-foot">
     <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:800; font-size: 1.2rem;">
@@ -227,11 +226,40 @@
       <span id="totalPrice">£0.00</span>
     </div>
     
-    <button onclick="app.sendWhatsApp()" style="width:100%; padding:18px; background:#25d366; color:white; border:none; border-radius:14px; font-weight:800; font-size: 1rem; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px;">
-      <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i> Finalise on WhatsApp
+    <button onclick="app.openOrderForm()" style="width:100%; padding:18px; background:#25d366; color:white; border:none; border-radius:14px; font-weight:800; font-size: 1rem; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px;">
+      Finalise Quote
     </button>
   </div>
 </div>
+
+<div id="orderFormModal" style="display:none; position:fixed; inset:0; z-index:3000; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); align-items:flex-end; justify-content:center;">
+  <div style="background:white; width:100%; max-width:500px; border-radius:24px 24px 0 0; padding:24px; animation: slideUp 0.3s ease-out; position:relative;">
+    <div style="width:40px; height:4px; background:#e2e8f0; border-radius:2px; margin:0 auto 20px;"></div>
+    <h2 style="font-weight:800; margin-bottom:8px;">Business Details</h2>
+    <p style="color:#64748b; font-size:0.9rem; margin-bottom:20px;">Please provide your details to generate the quote.</p>
+    
+    <input type="text" id="formBName" placeholder="Business Name" class="search-input">
+    <input type="text" id="formBAddr" placeholder="Delivery Address / City" class="search-input">
+    <input type="email" id="formBEmail" placeholder="Email Address" class="search-input">
+    
+    <div style="display:grid; grid-template-columns: 1fr 2fr; gap:12px; margin-top:10px;">
+      <button onclick="document.getElementById('orderFormModal').style.display='none'" style="padding:16px; border-radius:12px; border:1px solid #e2e8f0; background:none; font-weight:700;">Cancel</button>
+      <button onclick="app.submitFinalOrder()" style="padding:16px; border-radius:12px; border:none; background:var(--dark); color:white; font-weight:700;">Confirm & Send</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  /* On Desktop, make it a centered box instead of a bottom sheet */
+  @media (min-width: 768px) {
+    #orderFormModal { align-items: center; }
+    #orderFormModal > div { border-radius: 24px; margin-bottom: 0; }
+  }
+</style>
 
 <nav class="mobile-nav">
   <button class="nav-link active" id="btn-home" onclick="app.toggleSidebar(false)">
@@ -254,6 +282,7 @@
  * Paste your 160+ items between the square brackets [ ] below.
  */
 const products = [
+
   { id: 1, name: "M&M's Popcord", price: 33.00, pack: "12 units / box", cat: "top", img: "11.png" },
   { id: 2, name: "Snickers Popcorn", price: 33.00, pack: "12 units / box", cat: "top", img: "12.png" },
   { id: 3, name: "Oreo Popcorn", price: 33.00, pack: "12 units / box", cat: "top", img: "13.png" },
@@ -550,22 +579,49 @@ const app = {
     }
   },
 
-  sendWhatsApp() {
-    if(this.quote.length === 0) return alert("Please add some items to your list first!");
-    
-    let message = `*NEW WHOLESALE QUOTE REQUEST*\n`;
-    message += `------------------------------\n`;
-    
-    this.quote.forEach(item => {
-      message += `✅ *${item.qty}x* ${item.name}\n   (_${item.pack}_)\n\n`;
-    });
-    
-    message += `------------------------------\n`;
-    message += `*ESTIMATED TOTAL: ${document.getElementById('totalPrice').innerText}*\n\n`;
-    message += `Please confirm availability for these items.`;
+  openOrderForm() {
+    if (this.quote.length === 0) {
+      return alert("Your list is empty! Please add some items first.");
+    }
+    // Shows the custom UI modal
+    document.getElementById('orderFormModal').style.display = 'flex';
+  },
 
-    const phone = "447860239282"; // Your WhatsApp Number
+  submitFinalOrder() {
+    // 1. Capture the data from the custom UI form fields
+    const name = document.getElementById('formBName').value.trim();
+    const addr = document.getElementById('formBAddr').value.trim();
+    const email = document.getElementById('formBEmail').value.trim();
+
+    // 2. Validate that the user filled everything in
+    if (!name || !addr || !email) {
+      alert("Please fill in all fields before sending.");
+      return;
+    }
+
+    // 3. Build the professional plain-text message (No emojis)
+    let message = `NEW WHOLESALE QUOTE REQUEST\n`;
+    message += `------------------------------\n`;
+    message += `Business: ${name}\n`;
+    message += `Address: ${addr}\n`;
+    message += `Email: ${email}\n`;
+    message += `------------------------------\n\n`;
+
+    // 4. Loop through the items in the quote
+    this.quote.forEach(item => {
+      message += `${item.qty}x ${item.name}\n(${item.pack})\n\n`;
+    });
+
+    message += `------------------------------\n`;
+    message += `ESTIMATED TOTAL: ${document.getElementById('totalPrice').innerText}\n\n`;
+    message += `Please confirm availability and send over a formal invoice.`;
+
+    // 5. Send to WhatsApp
+    const phone = "447366341300";
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    
+    // 6. Close the modal and open WhatsApp
+    document.getElementById('orderFormModal').style.display = 'none';
     window.open(url, '_blank');
   }
 };
